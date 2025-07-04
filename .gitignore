@@ -1,0 +1,71 @@
+# Ambientes virtuais
+.venv/
+env/
+venv/
+ENV/
+*.egg-info/
+pip-wheel-metadata/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pastas temporárias e cache
+.cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.coverage
+.tox/
+build/
+dist/
+
+# Dados e resultados locais
+data/
+figures/
+*.sqlite3
+*.db
+*.log
+
+# Arquivos e pastas do VSCode
+.vscode/
+.code-workspace
+
+# PyCharm & IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Arquivos do Jupyter Notebook
+.ipynb_checkpoints/
+
+# Relatórios e arquivos de teste
+htmlcov/
+coverage.xml
+*.cover
+*.cov
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Arquivos de configuração do pre-commit
+.pre-commit-config.yaml
+
+# Arquivos de configurações pessoais
+*.swp
+*.swo
+
+# Outros arquivos que você NÃO quer versionar
+# !adicione ou remova linhas conforme necessário
+

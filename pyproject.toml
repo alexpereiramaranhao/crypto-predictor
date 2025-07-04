@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 88  # Padrão do black, pode ser 100 ou 120 se preferir
+target-version = ['py312']  # Ajuste para sua versão do Python, ex: py310, py39 etc.
+skip-string-normalization = false
+
+[tool.ruff]
+line-length = 88
+lint.extend-select = ["I"]  # Ordena imports também

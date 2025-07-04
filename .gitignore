@@ -9,6 +9,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.env
 
 # Pastas temporárias e cache
 .cache/

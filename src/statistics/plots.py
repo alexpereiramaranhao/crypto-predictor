@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from typing import Dict
 
 def plot_boxplot(df: pd.DataFrame, price_col: str = "close", crypto: str = "BTC"):
     plt.figure(figsize=(8, 4))
@@ -34,3 +35,15 @@ def plot_price_with_summary(df: pd.DataFrame, date_col: str = "date", price_col:
     plt.tight_layout()
     plt.savefig(f"figures/price_summary_{crypto}.png", dpi=150)
     plt.close()
+
+def compare_dispersion(dfs: Dict[str, pd.DataFrame], price_col: str = "close") -> pd.DataFrame:
+    """
+    Recebe um dicionário {nome: DataFrame} e retorna tabela com std e var de cada moeda.
+    """
+    data = []
+    for crypto, df in dfs.items():
+        std = df[price_col].std()
+        var = df[price_col].var()
+        data.append({"crypto": crypto, "std": std, "var": var})
+    result = pd.DataFrame(data)
+    return result

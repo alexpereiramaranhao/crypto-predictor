@@ -16,6 +16,10 @@ from rich.table import Table
 from rich import box
 from src.data_load import load_crypto_data
 from src.statistics.analysis import summary_statistics
+from src.statistics.plots import plot_boxplot, plot_histogram
+from src.statistics.analysis import compare_dispersion
+from src.statistics.plots import plot_price_with_summary
+
 from src.util.utils import setup_logging
 from src.util.config import LOG_LEVEL
 
@@ -58,6 +62,14 @@ def main():
     stats = summary_statistics(df)
     print_stats(stats, "BTC")
     print_message("Análise concluída!", style="bold blue")
+
+    plot_boxplot(df, crypto="BTC")
+    plot_histogram(df, crypto="BTC")
+
+    # dispersion_df = compare_dispersion(df)
+    # print(dispersion_df)
+
+    plot_price_with_summary(df, crypto="BTC")
 
     # Continue pipeline: features, modelagem, etc.
     # ...

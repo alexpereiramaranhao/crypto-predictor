@@ -16,6 +16,10 @@ def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, 
     Retorna medidas resumo e de dispersão do preço de fechamento.
     """
     desc = df[price_col].describe()
+
+    q1 = desc["25%"]
+    q3 = desc["75%"]
+
     stats = {
         "mean": desc["mean"],
         "median": df[price_col].median(),
@@ -24,6 +28,8 @@ def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, 
         "max": desc["max"],
         "std": desc["std"],
         "var": df[price_col].var(),
+        "amplitude": desc["max"] - desc["min"],
+        "iqr": q3 - q1,
         "25%": desc["25%"],
         "50%": desc["50%"],
         "75%": desc["75%"],
@@ -33,13 +39,26 @@ def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, 
 
 def compare_dispersion(dfs: Dict[str, pd.DataFrame], price_col: str = "close") -> pd.DataFrame:
     """
-    Recebe um dicionário {nome: DataFrame} e retorna tabela com std e var de cada moeda.
+    Compara a variabilidade (dispersão) do preço de fechamento entre criptomoedas.
+    Retorna um DataFrame com std, var, amplitude e IQR de cada cripto.
+    Args:
+        dfs (dict): Dicionário {nome: DataFrame}
+        price_col (str): Nome da coluna de preços
+    Returns:
+        pd.DataFrame: Medidas de dispersão por moeda
     """
     data = []
     for crypto, df in dfs.items():
-        std = df[price_col].std()
-        var = df[price_col].var()
-        data.append({"crypto": crypto, "std": std, "var": var})
+        desc = df[price_col].describe()
+        q1 = desc["25%"]
+        q3 = desc["75%"]
+        row = {
+            "crypto": crypto,
+            "std": df[price_col].std(),
+            "var": df[price_col].var(),
+            "amplitude": desc["max"] - desc["min"],
+            "iqr": q3 - q1
+        }
+        data.append(row)
     result = pd.DataFrame(data)
-    logging.info(f"Comparação de dispersão:\n{result}")
     return result

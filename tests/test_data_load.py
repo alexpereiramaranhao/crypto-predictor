@@ -29,3 +29,13 @@ def test_load_crypto_data(tmp_path):
     # Testa erro ao passar coluna inválida
     with pytest.raises(ValueError):
         load_crypto_data(str(temp_file), parse_dates=["data_invalida"])
+
+def test_load_crypto_data_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        load_crypto_data("data/non_existing_file.csv")
+
+def test_load_crypto_data_empty_file(tmp_path):
+    temp_file = tmp_path / "empty.csv"
+    temp_file.write_text("")
+    with pytest.raises(pd.errors.EmptyDataError):
+        load_crypto_data(str(temp_file))

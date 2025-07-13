@@ -1,5 +1,7 @@
 import logging
+
 from rich.logging import RichHandler
+
 
 def setup_logging(level: str = "INFO"):
     """
@@ -16,9 +18,9 @@ def setup_logging(level: str = "INFO"):
                 rich_tracebacks=True,
                 show_time=True,
                 omit_repeated_times=True,
-                show_path=True
+                show_path=True,
             )
-        ]
+        ],
     )
 
     logging.getLogger("matplotlib").setLevel(logging.WARNING)

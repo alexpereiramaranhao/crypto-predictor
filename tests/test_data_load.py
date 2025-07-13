@@ -1,8 +1,8 @@
-import os
 import pandas as pd
 import pytest
 
 from src.data_load import load_crypto_data
+
 
 def test_load_crypto_data(tmp_path):
     """
@@ -18,11 +18,11 @@ def test_load_crypto_data(tmp_path):
     temp_file.write_text(content)
 
     # Testa o carregamento sem skiprows
-    df = load_crypto_data(str(temp_file), parse_dates=['date'])
+    df = load_crypto_data(str(temp_file), parse_dates=["date"])
     # Testa se dataframe não está vazio
     assert not df.empty
     # Testa se coluna 'date' foi convertida para datetime
-    assert pd.api.types.is_datetime64_any_dtype(df['date'])
+    assert pd.api.types.is_datetime64_any_dtype(df["date"])
     # Testa se as colunas corretas estão presentes
     assert "open" in df.columns and "close" in df.columns
 
@@ -30,9 +30,11 @@ def test_load_crypto_data(tmp_path):
     with pytest.raises(ValueError):
         load_crypto_data(str(temp_file), parse_dates=["data_invalida"])
 
+
 def test_load_crypto_data_file_not_found():
     with pytest.raises(FileNotFoundError):
         load_crypto_data("data/non_existing_file.csv")
+
 
 def test_load_crypto_data_empty_file(tmp_path):
     temp_file = tmp_path / "empty.csv"

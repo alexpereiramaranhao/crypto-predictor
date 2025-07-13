@@ -13,12 +13,13 @@ from rich.console import Console
 from rich.table import Table
 
 from src.data_load import load_crypto_data
-from src.statistics.analysis import summary_statistics, compare_dispersion
+from src.statistics.analysis import compare_dispersion, summary_statistics
 from src.statistics.plots import plot_boxplot, plot_histogram, plot_price_with_summary
 from src.util.config import LOG_LEVEL
 from src.util.utils import setup_logging
 
 console = Console()
+
 
 def print_dispersion_table(dispersion_table):
     table = Table(title="Dispersão entre criptomoedas")
@@ -28,26 +29,42 @@ def print_dispersion_table(dispersion_table):
         table.add_row(*[f"{x:.6f}" if isinstance(x, float) else str(x) for x in row])
     console.print(table)
 
+
 def print_stats(stats: dict, crypto: str):
-    table = Table(title=f"Medidas resumo e de dispersão - {crypto}", box=box.SIMPLE_HEAVY)
+    table = Table(
+        title=f"Medidas resumo e de dispersão - {crypto}", box=box.SIMPLE_HEAVY
+    )
     table.add_column("Estatística", style="cyan", no_wrap=True)
     table.add_column("Valor", style="magenta")
     for key, value in stats.items():
         table.add_row(str(key), f"{value:.6f}")
     console.print(table)
 
+
 def print_message(message: str, style: str = "bold green"):
     console.print(message, style=style)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Crypto forecasting")
-    parser.add_argument("--model", type=str, choices=["mlp", "linear", "poly"], required=True, help="Modelo a ser usado")
-    parser.add_argument("--kfolds", type=int, default=5, help="Número de folds para cross-validation")
+    parser.add_argument(
+        "--model",
+        type=str,
+        choices=["mlp", "linear", "poly"],
+        required=True,
+        help="Modelo a ser usado",
+    )
+    parser.add_argument(
+        "--kfolds", type=int, default=5, help="Número de folds para cross-validation"
+    )
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
-    logging.info(f"Executando pipeline para múltiplas moedas usando modelo {args.model} com {args.kfolds} folds.")
+    logging.info(
+        f"Executando pipeline para múltiplas moedas usando modelo {args.model} com {args.kfolds} folds."
+    )
 
     # 1. Defina os arquivos das 10 criptomoedas (ajuste paths conforme sua organização)
     cryptos = {
@@ -60,7 +77,7 @@ def main():
         "XMR": "data/Poloniex_XMRBTC_d.csv",
         "DASH": "data/Poloniex_DASHBTC_d.csv",
         "ETC": "data/Poloniex_ETCBTC_d.csv",
-        "BAT": "data/Poloniex_BATBTC_d.csv"
+        "BAT": "data/Poloniex_BATBTC_d.csv",
     }
 
     dfs = {}
@@ -91,7 +108,10 @@ def main():
         dispersion_df = compare_dispersion(dfs)
         print_dispersion_table(dispersion_df)
     else:
-        logging.warning("Menos de duas criptomoedas processadas — não é possível comparar dispersão.")
+        logging.warning(
+            "Menos de duas criptomoedas processadas — não é possível comparar dispersão."
+        )
+
 
 if __name__ == "__main__":
     try:

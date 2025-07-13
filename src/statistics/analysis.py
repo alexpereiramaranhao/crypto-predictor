@@ -1,15 +1,14 @@
-import pandas as pd
-import numpy as np
 import logging
+from typing import Dict
+
+import numpy as np
+import pandas as pd
 from rich.logging import RichHandler
-from typing import Dict, List
 
 logging.basicConfig(
-    level="INFO",
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[RichHandler()]
+    level="INFO", format="%(message)s", datefmt="[%X]", handlers=[RichHandler()]
 )
+
 
 def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, float]:
     """
@@ -23,7 +22,9 @@ def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, 
     stats = {
         "mean": desc["mean"],
         "median": df[price_col].median(),
-        "mode": df[price_col].mode().iloc[0] if not df[price_col].mode().empty else np.nan,
+        "mode": (
+            df[price_col].mode().iloc[0] if not df[price_col].mode().empty else np.nan
+        ),
         "min": desc["min"],
         "max": desc["max"],
         "std": desc["std"],
@@ -37,7 +38,10 @@ def summary_statistics(df: pd.DataFrame, price_col: str = "close") -> Dict[str, 
 
     return stats
 
-def compare_dispersion(dfs: Dict[str, pd.DataFrame], price_col: str = "close") -> pd.DataFrame:
+
+def compare_dispersion(
+    dfs: Dict[str, pd.DataFrame], price_col: str = "close"
+) -> pd.DataFrame:
     """
     Compara a variabilidade (dispersão) do preço de fechamento entre criptomoedas.
     Retorna um DataFrame com std, var, amplitude e IQR de cada cripto.
@@ -57,7 +61,7 @@ def compare_dispersion(dfs: Dict[str, pd.DataFrame], price_col: str = "close") -
             "std": df[price_col].std(),
             "var": df[price_col].var(),
             "amplitude": desc["max"] - desc["min"],
-            "iqr": q3 - q1
+            "iqr": q3 - q1,
         }
         data.append(row)
     result = pd.DataFrame(data)

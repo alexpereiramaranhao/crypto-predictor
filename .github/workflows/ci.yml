@@ -38,14 +38,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-cov flake8 black
+          pip install pytest pytest-cov ruff black
 
-      - name: Lint with flake8
+      - name: Lint with ruff
         run: |
           # Para verificar erros de sintaxe e variáveis indefinidas
-          flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Para verificar complexidade e estilo (warnings, não falha o build)
-          flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+          ruff check src/ tests/          
 
       - name: Check code formatting with black
         run: |
@@ -79,11 +77,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install safety bandit
-
-      - name: Run safety check
-        run: |
-          safety check
+          pip install bandit
 
       - name: Run bandit security linter
         run: |

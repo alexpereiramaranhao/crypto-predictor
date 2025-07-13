@@ -2,6 +2,7 @@ import logging
 
 from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import KFold, cross_val_score, TimeSeriesSplit
 
 
 def train_mlp(X_train, y_train) -> MLPRegressor:
@@ -34,3 +35,15 @@ def train_linear(X_train, y_train) -> LinearRegression:
     except Exception as e:
         logging.error(f"Erro ao treinar o LinearRegression: {e}")
         raise
+
+def run_kfold_cv(model, X, y, k=5, scoring="neg_mean_squared_error", time_series=False):
+    """
+    Executa validação cruzada K-fold (ou TimeSeriesSplit se time_series=True) para um modelo.
+    Retorna métricas por fold.
+    """
+    if time_series:
+        cv = TimeSeriesSplit(n_splits=k)
+    else:
+        cv = KFold(n_splits=k, shuffle=True, random_state=42)
+    scores = cross_val_score(model, X, y, cv=cv, scoring=scoring)
+    return scores

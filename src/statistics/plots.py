@@ -62,7 +62,7 @@ def plot_price_with_summary(
 def plotar_evolucao_lucro(historico_dinheiro_modelo1, historico_dinheiro_modelo2, 
                                   nome_modelo1="Modelo 1", nome_modelo2="Modelo 2"):
     """
-    Plota a evolução do lucro de dois modelos ao longo do tempo.
+    Plota a evolução do lucro de dois modelos ao longo do tempo usando subplots.
     
     Args:
         historico_dinheiro_modelo1: Lista com evolução do dinheiro do modelo 1
@@ -72,25 +72,47 @@ def plotar_evolucao_lucro(historico_dinheiro_modelo1, historico_dinheiro_modelo2
     """
     print("Criando gráfico de evolução do lucro...")
     
-    plt.figure(figsize=(12, 6))
+    _, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
     
     # Dias (eixo X)
     dias = list(range(len(historico_dinheiro_modelo1)))
-    
-    # Plota as duas linhas
-    plt.plot(dias, historico_dinheiro_modelo1, label=nome_modelo1, linewidth=2, marker='o', markersize=4)
-    plt.plot(dias, historico_dinheiro_modelo2, label=nome_modelo2, linewidth=2, marker='s', markersize=4)
-    
-    # Adiciona linha horizontal no investimento inicial
     investimento_inicial = historico_dinheiro_modelo1[0]
-    plt.axhline(y=investimento_inicial, color='gray', linestyle='--', alpha=0.7, 
-                label=f'Investimento inicial (R$ {investimento_inicial:.2f})')
     
-    plt.title("Evolução do Lucro dos Modelos ao Longo do Tempo")
-    plt.xlabel("Dias")
-    plt.ylabel("Valor da Carteira (R$)")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
+    # Subplot 1: Modelo 1
+    ax1.plot(dias, historico_dinheiro_modelo1, label=nome_modelo1, linewidth=2, 
+             marker='o', markersize=4, color='blue')
+    ax1.axhline(y=investimento_inicial, color='gray', linestyle='--', alpha=0.7, 
+                label=f'Investimento inicial (R$ {investimento_inicial:.2f})')
+    ax1.set_title(f"Evolução do Lucro - {nome_modelo1}")
+    ax1.set_xlabel("Dias")
+    ax1.set_ylabel("Valor da Carteira (R$)")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Subplot 2: Modelo 2
+    ax2.plot(dias, historico_dinheiro_modelo2, label=nome_modelo2, linewidth=2, 
+             marker='s', markersize=4, color='green')
+    ax2.axhline(y=investimento_inicial, color='gray', linestyle='--', alpha=0.7, 
+                label=f'Investimento inicial (R$ {investimento_inicial:.2f})')
+    ax2.set_title(f"Evolução do Lucro - {nome_modelo2}")
+    ax2.set_xlabel("Dias")
+    ax2.set_ylabel("Valor da Carteira (R$)")
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    # Subplot 3: Comparação dos dois modelos
+    ax3.plot(dias, historico_dinheiro_modelo1, label=nome_modelo1, linewidth=2, 
+             marker='o', markersize=4, color='blue')
+    ax3.plot(dias, historico_dinheiro_modelo2, label=nome_modelo2, linewidth=2, 
+             marker='s', markersize=4, color='green')
+    ax3.axhline(y=investimento_inicial, color='gray', linestyle='--', alpha=0.7, 
+                label=f'Investimento inicial (R$ {investimento_inicial:.2f})')
+    ax3.set_title("Comparação dos Modelos")
+    ax3.set_xlabel("Dias")
+    ax3.set_ylabel("Valor da Carteira (R$)")
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
+    
     plt.tight_layout()
     plt.savefig("figures/evolucao_lucro_modelos.png", dpi=150)
     plt.close()

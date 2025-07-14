@@ -377,7 +377,7 @@ def main() -> None:
             
             # 7. Calcular validação cruzada
             print_message(f"✅ Fazendo validação cruzada com {args.kfolds} folds...", style="cyan")
-            errors, mean_error = validacao_cruzada_kfold(X, y, args.kfolds)
+            errors, mean_error = validacao_cruzada_kfold(X, y, args.kfolds, args.model)
             
             # 8. Calcular lucros do modelo escolhido
             print_message("💰 Calculando lucros do modelo escolhido...", style="green")

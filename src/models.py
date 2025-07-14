@@ -41,7 +41,7 @@ def train_linear(X_train: np.ndarray, y_train: np.ndarray) -> LinearRegression:
         raise
 
 
-def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_folds: int = 5) -> Tuple[List[float], float]:
+def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_folds: int = 5, modelo_tipo: str = "linear") -> Tuple[List[float], float]:
     """
     Função para fazer validação cruzada K-fold.
     
@@ -49,6 +49,7 @@ def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_fol
         dados_X: Os dados de entrada (features)
         dados_y: Os dados de saída (target)
         numero_folds: Quantas partes dividir os dados (padrão: 5)
+        modelo_tipo: Tipo do modelo ("linear", "mlp", "poly")
     
     Returns:
         lista_erros: Lista com os erros de cada fold
@@ -75,12 +76,54 @@ def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_fol
         X_treino_escalado = scaler.fit_transform(X_treino)
         X_teste_escalado = scaler.transform(X_teste)
         
-        # Treina um modelo linear
-        modelo_linear = LinearRegression()
-        modelo_linear.fit(X_treino_escalado, y_treino)
+        # Verifica se há problemas numéricos após escalar
+        if np.any(np.isnan(X_treino_escalado)) or np.any(np.isinf(X_treino_escalado)):
+            X_treino_escalado = np.nan_to_num(X_treino_escalado, nan=0, posinf=10, neginf=-10)
+        if np.any(np.isnan(X_teste_escalado)) or np.any(np.isinf(X_teste_escalado)):
+            X_teste_escalado = np.nan_to_num(X_teste_escalado, nan=0, posinf=10, neginf=-10)
+        
+        # Clipping adicional para valores extremos
+        X_treino_escalado = np.clip(X_treino_escalado, -50, 50)
+        X_teste_escalado = np.clip(X_teste_escalado, -50, 50)
+        
+        # Treina modelo baseado no tipo escolhido
+        if modelo_tipo == "linear":
+            # Verifica condição da matriz para evitar problemas numéricos
+            try:
+                cond_number = np.linalg.cond(X_treino_escalado)
+                if cond_number > 1e12:  # Matriz mal condicionada
+                    from sklearn.linear_model import Ridge
+                    modelo = Ridge(alpha=1e-10)  # Alpha mínimo para manter comportamento linear
+                else:
+                    modelo = LinearRegression()
+            except:
+                from sklearn.linear_model import Ridge
+                modelo = Ridge(alpha=1e-10)
+            
+            modelo.fit(X_treino_escalado, y_treino)
+            
+        elif modelo_tipo == "mlp":
+            modelo = MLPRegressor(random_state=42, max_iter=500)
+            modelo.fit(X_treino_escalado, y_treino)
+            
+        elif modelo_tipo == "poly":
+            # Cria features polinomiais
+            poly_features = PolynomialFeatures(degree=2)
+            X_treino_poly = poly_features.fit_transform(X_treino_escalado)
+            X_teste_poly = poly_features.transform(X_teste_escalado)
+            
+            modelo = LinearRegression()
+            modelo.fit(X_treino_poly, y_treino)
+            
+            # Atualiza variáveis para usar features polinomiais
+            X_teste_escalado = X_teste_poly
+            
+        else:  # fallback para linear
+            modelo = LinearRegression()
+            modelo.fit(X_treino_escalado, y_treino)
         
         # Faz previsões no conjunto de teste
-        previsoes = modelo_linear.predict(X_teste_escalado)
+        previsoes = modelo.predict(X_teste_escalado)
         
         # Calcula o erro (RMSE - Root Mean Square Error)
         erro_rmse = np.sqrt(mean_squared_error(y_teste, previsoes))
@@ -153,7 +196,7 @@ def encontrar_melhor_grau_polinomial(dados_X: np.ndarray, dados_y: np.ndarray) -
             modelo, transformador = treinar_regressao_polinomial(dados_X, dados_y, grau)
             
             # Faz validação cruzada para calcular erro
-            _, erro_medio = validacao_cruzada_kfold(dados_X, dados_y, numero_folds=3)
+            _, erro_medio = validacao_cruzada_kfold(dados_X, dados_y, numero_folds=3, modelo_tipo="poly")
             
             print(f"Grau {grau}: Erro médio = {erro_medio:.4f}")
             

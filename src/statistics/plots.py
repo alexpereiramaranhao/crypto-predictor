@@ -57,19 +57,6 @@ def plot_price_with_summary(
     plt.close()
 
 
-def compare_dispersion(
-    dfs: Dict[str, pd.DataFrame], price_col: str = "close"
-) -> pd.DataFrame:
-    """
-    Recebe um dicionário {nome: DataFrame} e retorna tabela com std e var de cada moeda.
-    """
-    data = []
-    for crypto, df in dfs.items():
-        std = df[price_col].std()
-        var = df[price_col].var()
-        data.append({"crypto": crypto, "std": std, "var": var})
-    result = pd.DataFrame(data)
-    return result
 
 
 def plotar_evolucao_lucro(historico_dinheiro_modelo1, historico_dinheiro_modelo2, 
@@ -166,34 +153,3 @@ def plotar_dispersao_modelos(precos_reais, previsoes_modelo1, previsoes_modelo2,
     print("Gráfico salvo em figures/dispersao_modelos.png")
 
 
-def plotar_retornos_entre_criptos(dados_criptos_dict):
-    """
-    Plota boxplot dos retornos diários de várias criptomoedas para comparação.
-    
-    Args:
-        dados_criptos_dict: Dicionário com {nome_crypto: dataframe}
-    """
-    print("Criando gráfico de comparação de retornos entre criptomoedas...")
-    
-    # Prepara os dados
-    dados_para_plot = []
-    for nome_crypto, dataframe in dados_criptos_dict.items():
-        if 'retorno_diario' in dataframe.columns:
-            retornos_limpos = dataframe['retorno_diario'].dropna()
-            for retorno in retornos_limpos:
-                dados_para_plot.append({'Criptomoeda': nome_crypto, 'Retorno_Diario': retorno})
-    
-    df_plot = pd.DataFrame(dados_para_plot)
-    
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(data=df_plot, x='Criptomoeda', y='Retorno_Diario')
-    plt.title("Comparação dos Retornos Diários entre Criptomoedas")
-    plt.xlabel("Criptomoeda")
-    plt.ylabel("Retorno Diário (%)")
-    plt.xticks(rotation=45)
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig("figures/comparacao_retornos_criptos.png", dpi=150)
-    plt.close()
-    
-    print("Gráfico salvo em figures/comparacao_retornos_criptos.png")

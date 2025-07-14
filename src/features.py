@@ -26,7 +26,7 @@ def add_rolling_features(df: pd.DataFrame, window: int = 7) -> pd.DataFrame:
 
 def calcular_media_movel(dados_preco: Union[pd.Series, list], janela_dias: int = 7) -> pd.Series:
     """
-    Calcula a média móvel simples dos preços.
+    Calcula a média móvel dos preços.
     
     Args:
         dados_preco: Lista ou Series com os preços
@@ -74,7 +74,7 @@ def calcular_volatilidade(dados_preco: Union[pd.Series, list], janela_dias: int 
 
 def calcular_retorno(dados_preco: Union[pd.Series, list]) -> pd.Series:
     """
-    Calcula o retorno simples entre dias consecutivos.
+    Calcula o retorno entre dias consecutivos.
     
     Args:
         dados_preco: Lista ou Series com os preços
@@ -82,7 +82,7 @@ def calcular_retorno(dados_preco: Union[pd.Series, list]) -> pd.Series:
     Returns:
         retornos: Lista com os retornos percentuais
     """
-    print("Calculando retornos simples...")
+    print("Calculando retornos...")
     
     # Converte para pandas Series se não for
     if not isinstance(dados_preco, pd.Series):

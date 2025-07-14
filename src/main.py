@@ -20,10 +20,11 @@ from rich.table import Table
 
 from src.data_load import load_crypto_data
 from src.features import criar_features_basicas_completas
-from src.models import train_mlp, train_linear, treinar_regressao_polinomial, validacao_cruzada_kfold
+from src.models import train_mlp, train_linear, encontrar_melhor_grau_polinomial, validacao_cruzada_kfold
 from src.lucro import calcular_lucro_investimento, calcular_estrategia_buy_and_hold
+from src.analise_lucro import imprimir_metricas_modelo, comparar_todos_modelos, mostrar_equacao_linear
 from src.statistics.analysis import compare_dispersion, summary_statistics
-from src.statistics.plots import plot_boxplot, plot_histogram, plot_price_with_summary
+from src.statistics.plots import plot_boxplot, plot_histogram, plot_price_with_summary, plotar_evolucao_lucro, plotar_dispersao_modelos
 from src.util.config import LOG_LEVEL
 from src.util.utils import setup_logging
 
@@ -99,6 +100,109 @@ def preparar_features_para_modelo(df_with_features: pd.DataFrame) -> Tuple[np.nd
     return X, y, df_clean[:-1]
 
 
+def fazer_analise_completa_lucro(X: np.ndarray, y: np.ndarray, crypto: str) -> None:
+    """
+    Faz análise completa de lucro comparando MLP, Linear e melhor Polinomial.
+    
+    Args:
+        X: Features preparadas
+        y: Target (preços)
+        crypto: Nome da criptomoeda
+    """
+    print_message(f"\n🔍 Análise Completa de Lucro - {crypto}", style="bold magenta")
+    
+    # Dividir dados
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, shuffle=False
+    )
+    
+    # Normalizar features
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    # 1. Treinar MLP
+    print_message("🤖 Treinando MLP...", style="cyan")
+    modelo_mlp = train_mlp(X_train_scaled, y_train)
+    previsoes_mlp = modelo_mlp.predict(X_test_scaled)
+    
+    # 2. Treinar Linear
+    print_message("📈 Treinando Regressão Linear...", style="cyan")
+    modelo_linear = train_linear(X_train_scaled, y_train)
+    previsoes_linear = modelo_linear.predict(X_test_scaled)
+    
+    # 3. Encontrar melhor grau polinomial
+    print_message("🔢 Encontrando melhor grau polinomial (2-10)...", style="cyan")
+    melhor_grau, _, modelo_poly, transformador_poly = encontrar_melhor_grau_polinomial(X_train_scaled, y_train)
+    
+    # Fazer previsões com melhor polinomial
+    X_test_poly = transformador_poly.transform(X_test_scaled)
+    previsoes_poly = modelo_poly.predict(X_test_poly)
+    
+    # === ANÁLISES ESTATÍSTICAS (requisitos b, c, d) ===
+    
+    resultados_modelos = {}
+    
+    # MLP
+    metricas_mlp = imprimir_metricas_modelo("MLP", y_test, previsoes_mlp)
+    resultados_modelos["MLP"] = metricas_mlp
+    
+    # Linear
+    metricas_linear = imprimir_metricas_modelo("Linear", y_test, previsoes_linear)
+    resultados_modelos["Linear"] = metricas_linear
+    print(f"Equação Linear: {mostrar_equacao_linear(modelo_linear)}")
+    
+    # Polinomial
+    nome_poly = f"Polinomial Grau {melhor_grau}"
+    metricas_poly = imprimir_metricas_modelo(nome_poly, y_test, previsoes_poly)
+    resultados_modelos[nome_poly] = metricas_poly
+    print(f"Equação Polinomial: {mostrar_equacao_linear(modelo_poly)} (com features transformadas)")
+    
+    # Comparação final (requisito e)
+    comparar_todos_modelos(resultados_modelos)
+    
+    # === CÁLCULO DE LUCROS ===
+    
+    print_message("\n💰 Calculando lucros...", style="green")
+    
+    # Lucro MLP
+    _, lucro_mlp, historico_mlp = calcular_lucro_investimento(y_test, previsoes_mlp)
+    
+    # Lucro Linear
+    _, lucro_linear, historico_linear = calcular_lucro_investimento(y_test, previsoes_linear)
+    
+    # Lucro Polinomial
+    _, lucro_poly, historico_poly = calcular_lucro_investimento(y_test, previsoes_poly)
+    
+    # Lucro Buy-and-Hold
+    lucro_buyhold = calcular_estrategia_buy_and_hold(y_test)
+    
+    # Mostrar resultados de lucro
+    print(f"\nRESULTADOS DE LUCRO ({crypto}):")
+    print(f"MLP: R$ {lucro_mlp:.2f}")
+    print(f"Linear: R$ {lucro_linear:.2f}")
+    print(f"{nome_poly}: R$ {lucro_poly:.2f}")
+    print(f"Buy-and-Hold: R$ {lucro_buyhold:.2f}")
+    
+    # === GRÁFICOS (requisitos a e f) ===
+    
+    print_message("📊 Gerando gráficos...", style="blue")
+    
+    # a) Diagrama de dispersão (comparando MLP e melhor polinomial)
+    plotar_dispersao_modelos(
+        y_test, previsoes_mlp, previsoes_poly,
+        nome_modelo1="MLP", nome_modelo2=nome_poly
+    )
+    
+    # f) Evolução do lucro (comparando MLP e melhor polinomial)
+    plotar_evolucao_lucro(
+        historico_mlp, historico_poly,
+        nome_modelo1="MLP", nome_modelo2=nome_poly
+    )
+    
+    print_message(f"✅ Análise completa de {crypto} finalizada!", style="bold green")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Crypto forecasting")
     parser.add_argument(
@@ -160,7 +264,7 @@ def main() -> None:
             # d) Gráfico de linha com preço + média, mediana, moda
             plot_price_with_summary(df, crypto=crypto)
 
-            # === NOVO: PIPELINE DE MACHINE LEARNING ===
+            # === PIPELINE DE MACHINE LEARNING ===
             
             # 2. Criar features
             print_message("🔧 Criando features...", style="cyan")
@@ -173,6 +277,12 @@ def main() -> None:
                 print_message(f"❌ {crypto}: Poucos dados para treinamento", style="red")
                 continue
             
+            # === ANÁLISE COMPLETA DE LUCRO (Requisito 9) ===
+            # Faz análise completa comparando MLP vs Linear vs melhor Polinomial
+            fazer_analise_completa_lucro(X, y, crypto)
+            
+            # === PIPELINE ORIGINAL (para compatibilidade) ===
+            
             # 4. Dividir dados treino/teste
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=0.2, random_state=42, shuffle=False
@@ -183,8 +293,8 @@ def main() -> None:
             X_train_scaled = scaler.fit_transform(X_train)
             X_test_scaled = scaler.transform(X_test)
             
-            # 6. Treinar modelo escolhido
-            print_message(f"🤖 Treinando modelo {args.model}...", style="cyan")
+            # 6. Treinar modelo escolhido pelo usuário
+            print_message(f"🤖 Treinando modelo escolhido pelo usuário: {args.model}...", style="cyan")
             
             if args.model == "poly":
                 model, poly_transformer = treinar_modelo_escolhido(args.model, X_train_scaled, y_train)
@@ -199,8 +309,8 @@ def main() -> None:
             print_message(f"✅ Fazendo validação cruzada com {args.kfolds} folds...", style="cyan")
             errors, mean_error = validacao_cruzada_kfold(X, y, args.kfolds)
             
-            # 8. Calcular lucros
-            print_message("💰 Calculando lucros...", style="green")
+            # 8. Calcular lucros do modelo escolhido
+            print_message("💰 Calculando lucros do modelo escolhido...", style="green")
             
             # Preços reais do período de teste
             test_prices = y_test

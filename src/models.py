@@ -75,7 +75,7 @@ def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_fol
         X_treino_escalado = scaler.fit_transform(X_treino)
         X_teste_escalado = scaler.transform(X_teste)
         
-        # Treina um modelo linear simples
+        # Treina um modelo linear
         modelo_linear = LinearRegression()
         modelo_linear.fit(X_treino_escalado, y_treino)
         
@@ -99,7 +99,7 @@ def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_fol
 
 def treinar_regressao_polinomial(dados_X: np.ndarray, dados_y: np.ndarray, grau_polinomio: int = 2) -> Tuple[LinearRegression, PolynomialFeatures]:
     """
-    Treina um modelo de regressão polinomial bem simples.
+    Treina um modelo de regressão polinomial.
     
     Args:
         dados_X: Dados de entrada
@@ -123,3 +123,51 @@ def treinar_regressao_polinomial(dados_X: np.ndarray, dados_y: np.ndarray, grau_
     print(f"Modelo polinomial grau {grau_polinomio} treinado com sucesso!")
     
     return modelo_linear, transformador_polinomial
+
+
+def encontrar_melhor_grau_polinomial(dados_X: np.ndarray, dados_y: np.ndarray) -> Tuple[int, float, LinearRegression, PolynomialFeatures]:
+    """
+    Testa graus polinomiais de 2 a 10 e encontra o melhor baseado no erro.
+    
+    Args:
+        dados_X: Dados de entrada
+        dados_y: Dados de saída
+    
+    Returns:
+        melhor_grau: O grau que teve menor erro
+        menor_erro: O menor erro encontrado
+        melhor_modelo: O modelo treinado com melhor grau
+        melhor_transformador: O transformador do melhor grau
+    """
+    print("Testando graus polinomiais de 2 a 10...")
+    
+    melhor_grau = 2
+    menor_erro = float('inf')
+    melhor_modelo = None
+    melhor_transformador = None
+    
+    # Testa cada grau de 2 a 10
+    for grau in range(2, 11):
+        try:
+            # Treina modelo polinomial com este grau
+            modelo, transformador = treinar_regressao_polinomial(dados_X, dados_y, grau)
+            
+            # Faz validação cruzada para calcular erro
+            _, erro_medio = validacao_cruzada_kfold(dados_X, dados_y, numero_folds=3)
+            
+            print(f"Grau {grau}: Erro médio = {erro_medio:.4f}")
+            
+            # Se este grau é melhor, guarda
+            if erro_medio < menor_erro:
+                menor_erro = erro_medio
+                melhor_grau = grau
+                melhor_modelo = modelo
+                melhor_transformador = transformador
+                
+        except Exception as e:
+            print(f"Erro no grau {grau}: {e}")
+            continue
+    
+    print(f"Melhor grau polinomial: {melhor_grau} (erro: {menor_erro:.4f})")
+    
+    return melhor_grau, menor_erro, melhor_modelo, melhor_transformador

@@ -11,7 +11,7 @@ from src.features import (
 
 def test_calcular_media_movel():
     """Testa se a média móvel está sendo calculada corretamente."""
-    # Dados simples de teste
+    # Dados de teste
     precos = [10, 20, 30, 40, 50]
     
     # Calcula média móvel de 3 dias
@@ -30,7 +30,7 @@ def test_calcular_media_movel():
 
 def test_calcular_volatilidade():
     """Testa se a volatilidade está sendo calculada corretamente."""
-    # Dados simples de teste (sem variação = volatilidade zero)
+    # Dados teste (sem variação = volatilidade zero)
     precos_sem_variacao = [10, 10, 10, 10, 10]
     
     volatilidade = calcular_volatilidade(precos_sem_variacao, janela_dias=3)
@@ -41,7 +41,7 @@ def test_calcular_volatilidade():
 
 def test_calcular_retorno():
     """Testa se os retornos estão sendo calculados corretamente."""
-    # Dados simples: preço dobra a cada dia
+    # Dados : preço dobra a cada dia
     precos = [100, 200, 400, 800]
     
     retornos = calcular_retorno(precos)
@@ -58,7 +58,7 @@ def test_calcular_retorno():
 
 def test_criar_features_basicas_completas():
     """Testa se todas as features básicas são criadas corretamente."""
-    # Cria um DataFrame simples para teste
+    # Cria um DataFrame para teste
     dados_teste = {
         'date': pd.date_range('2024-01-01', periods=10, freq='D'),
         'close': [100, 110, 105, 120, 115, 130, 125, 140, 135, 150]

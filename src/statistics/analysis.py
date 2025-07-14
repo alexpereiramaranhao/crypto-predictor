@@ -71,7 +71,7 @@ def compare_dispersion(
 
 def teste_hipotese_retorno(retornos_diarios, percentual_esperado=5.0, nivel_significancia=0.05):
     """
-    Teste de hipótese simples para verificar se o retorno médio é maior que um valor esperado.
+    Teste de hipótese para verificar se o retorno médio é maior que um valor esperado.
     
     Hipótese nula (H0): retorno médio <= percentual_esperado
     Hipótese alternativa (H1): retorno médio > percentual_esperado
@@ -137,7 +137,7 @@ def teste_hipotese_retorno(retornos_diarios, percentual_esperado=5.0, nivel_sign
 
 def anova_entre_criptos(dados_criptos_dict):
     """
-    ANOVA simples para comparar retornos médios entre diferentes criptomoedas.
+    ANOVA para comparar retornos médios entre diferentes criptomoedas.
     
     Args:
         dados_criptos_dict: Dicionário com {nome_crypto: dataframe}

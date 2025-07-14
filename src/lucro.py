@@ -1,8 +1,14 @@
+from typing import Union, List, Tuple, Optional, Dict
+
 import numpy as np
 import pandas as pd
 
 
-def calcular_lucro_investimento(precos_reais, previsoes_modelo, investimento_inicial=1000.0):
+def calcular_lucro_investimento(
+    precos_reais: Union[List[float], pd.Series, np.ndarray], 
+    previsoes_modelo: Union[List[float], pd.Series, np.ndarray], 
+    investimento_inicial: float = 1000.0
+) -> Tuple[float, float, List[float]]:
     """
     Calcula o lucro obtido seguindo as previsões de um modelo.
     
@@ -71,8 +77,13 @@ def calcular_lucro_investimento(precos_reais, previsoes_modelo, investimento_ini
     return dinheiro_final, lucro_total, historico_dinheiro
 
 
-def comparar_lucro_entre_modelos(precos_reais, previsoes_modelo1, previsoes_modelo2, 
-                                nome_modelo1="Modelo 1", nome_modelo2="Modelo 2"):
+def comparar_lucro_entre_modelos(
+    precos_reais: Union[List[float], pd.Series, np.ndarray], 
+    previsoes_modelo1: Union[List[float], pd.Series, np.ndarray], 
+    previsoes_modelo2: Union[List[float], pd.Series, np.ndarray], 
+    nome_modelo1: str = "Modelo 1", 
+    nome_modelo2: str = "Modelo 2"
+) -> Dict[str, Union[float, str, Dict]]:
     """
     Compara o lucro entre dois modelos diferentes.
     
@@ -121,7 +132,10 @@ def comparar_lucro_entre_modelos(precos_reais, previsoes_modelo1, previsoes_mode
     return resultados
 
 
-def calcular_estrategia_buy_and_hold(precos_reais, investimento_inicial=1000.0):
+def calcular_estrategia_buy_and_hold(
+    precos_reais: Union[List[float], pd.Series, np.ndarray], 
+    investimento_inicial: float = 1000.0
+) -> float:
     """
     Calcula o lucro da estratégia "comprar e segurar" (buy and hold).
     Compra no primeiro dia e vende no último dia.

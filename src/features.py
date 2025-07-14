@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -23,7 +24,7 @@ def add_rolling_features(df: pd.DataFrame, window: int = 7) -> pd.DataFrame:
         raise
 
 
-def calcular_media_movel(dados_preco, janela_dias=7):
+def calcular_media_movel(dados_preco: Union[pd.Series, list], janela_dias: int = 7) -> pd.Series:
     """
     Calcula a média móvel simples dos preços.
     
@@ -47,7 +48,7 @@ def calcular_media_movel(dados_preco, janela_dias=7):
     return media_movel
 
 
-def calcular_volatilidade(dados_preco, janela_dias=7):
+def calcular_volatilidade(dados_preco: Union[pd.Series, list], janela_dias: int = 7) -> pd.Series:
     """
     Calcula a volatilidade (desvio padrão) dos preços.
     
@@ -71,7 +72,7 @@ def calcular_volatilidade(dados_preco, janela_dias=7):
     return volatilidade
 
 
-def calcular_retorno(dados_preco):
+def calcular_retorno(dados_preco: Union[pd.Series, list]) -> pd.Series:
     """
     Calcula o retorno simples entre dias consecutivos.
     
@@ -94,7 +95,7 @@ def calcular_retorno(dados_preco):
     return retornos
 
 
-def criar_features_basicas_completas(dataframe_crypto):
+def criar_features_basicas_completas(dataframe_crypto: pd.DataFrame) -> pd.DataFrame:
     """
     Cria features de uma vez para um DataFrame de criptomoeda.
     

@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple, List
 
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -8,7 +9,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.metrics import mean_squared_error
 
 
-def train_mlp(X_train, y_train) -> MLPRegressor:
+def train_mlp(X_train: np.ndarray, y_train: np.ndarray) -> MLPRegressor:
     """
     Treina um modelo MLPRegressor.
     Returns:
@@ -24,7 +25,7 @@ def train_mlp(X_train, y_train) -> MLPRegressor:
         raise
 
 
-def train_linear(X_train, y_train) -> LinearRegression:
+def train_linear(X_train: np.ndarray, y_train: np.ndarray) -> LinearRegression:
     """
     Treina um modelo LinearRegression.
     Returns:
@@ -40,7 +41,7 @@ def train_linear(X_train, y_train) -> LinearRegression:
         raise
 
 
-def validacao_cruzada_kfold(dados_X, dados_y, numero_folds=5):
+def validacao_cruzada_kfold(dados_X: np.ndarray, dados_y: np.ndarray, numero_folds: int = 5) -> Tuple[List[float], float]:
     """
     Função para fazer validação cruzada K-fold.
     
@@ -96,7 +97,7 @@ def validacao_cruzada_kfold(dados_X, dados_y, numero_folds=5):
     return lista_erros, erro_medio
 
 
-def treinar_regressao_polinomial(dados_X, dados_y, grau_polinomio=2):
+def treinar_regressao_polinomial(dados_X: np.ndarray, dados_y: np.ndarray, grau_polinomio: int = 2) -> Tuple[LinearRegression, PolynomialFeatures]:
     """
     Treina um modelo de regressão polinomial bem simples.
     

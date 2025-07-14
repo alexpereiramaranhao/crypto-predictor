@@ -7,8 +7,10 @@ Executa todo o pipeline de análise e previsão de criptomoedas.
 import argparse
 import logging
 import sys
+from typing import Tuple, Union, Any
 
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
@@ -28,7 +30,7 @@ from src.util.utils import setup_logging
 console = Console()
 
 
-def print_dispersion_table(dispersion_table):
+def print_dispersion_table(dispersion_table: pd.DataFrame) -> None:
     table = Table(title="Dispersão entre criptomoedas")
     for col in dispersion_table.columns:
         table.add_column(str(col), style="cyan")
@@ -52,7 +54,7 @@ def print_message(message: str, style: str = "bold green"):
     console.print(message, style=style)
 
 
-def print_profit_results(crypto: str, profit_model, profit_buyhold):
+def print_profit_results(crypto: str, profit_model: float, profit_buyhold: float) -> None:
     table = Table(title=f"Resultados de Lucro - {crypto}", box=box.SIMPLE_HEAVY)
     table.add_column("Estratégia", style="cyan", no_wrap=True)
     table.add_column("Lucro (R$)", style="magenta")
@@ -66,7 +68,7 @@ def print_profit_results(crypto: str, profit_model, profit_buyhold):
     console.print(table)
 
 
-def treinar_modelo_escolhido(model_type: str, X_train, y_train):
+def treinar_modelo_escolhido(model_type: str, X_train: np.ndarray, y_train: np.ndarray) -> Union[Any, Tuple[Any, Any]]:
     """Treina o modelo escolhido pelo usuário"""
     if model_type == "linear":
         return train_linear(X_train, y_train)
@@ -79,7 +81,7 @@ def treinar_modelo_escolhido(model_type: str, X_train, y_train):
         raise ValueError(f"Modelo {model_type} não reconhecido!")
 
 
-def preparar_features_para_modelo(df_with_features):
+def preparar_features_para_modelo(df_with_features: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, pd.DataFrame]:
     """Prepara as features e target para treinamento"""
     # Remove linhas com valores NaN (que aparecem devido às médias móveis)
     df_clean = df_with_features.dropna()
@@ -97,7 +99,7 @@ def preparar_features_para_modelo(df_with_features):
     return X, y, df_clean[:-1]
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Crypto forecasting")
     parser.add_argument(
         "--model",
@@ -112,7 +114,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = parse_args()
     print_message(
         f"🚀 Executando pipeline usando modelo {args.model} com {args.kfolds} folds", 

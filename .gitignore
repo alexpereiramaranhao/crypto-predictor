@@ -24,7 +24,6 @@ build/
 dist/
 
 # Dados e resultados locais
-data/
 figures/
 *.sqlite3
 *.db

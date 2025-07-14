@@ -7,7 +7,7 @@ Executa todo o pipeline de análise e previsão de criptomoedas.
 import argparse
 import logging
 import sys
-from typing import Tuple, Union, Any
+from typing import Tuple, Union, Any, List, Dict
 
 import numpy as np
 import pandas as pd
@@ -23,7 +23,7 @@ from src.features import criar_features_basicas_completas
 from src.models import train_mlp, train_linear, encontrar_melhor_grau_polinomial, validacao_cruzada_kfold
 from src.lucro import calcular_lucro_investimento, calcular_estrategia_buy_and_hold
 from src.analise_lucro import imprimir_metricas_modelo, comparar_todos_modelos, mostrar_equacao_linear
-from src.statistics.analysis import compare_dispersion, summary_statistics
+from src.statistics.analysis import compare_dispersion, summary_statistics, teste_hipotese_retorno
 from src.statistics.plots import plot_boxplot, plot_histogram, plot_price_with_summary, plotar_evolucao_lucro, plotar_dispersao_modelos
 from src.util.config import LOG_LEVEL
 from src.util.utils import setup_logging
@@ -53,6 +53,57 @@ def print_stats(stats: dict, crypto: str):
 
 def print_message(message: str, style: str = "bold green"):
     console.print(message, style=style)
+
+
+def print_resumo_teste_hipotese(resultados_teste: List[Dict]) -> None:
+    """
+    Mostra tabela resumo dos testes de hipótese para todas as criptomoedas.
+    
+    Args:
+        resultados_teste: Lista com resultados do teste para cada crypto
+    """
+    if not resultados_teste:
+        return
+        
+    print_message("\n📊 RESUMO DOS TESTES DE HIPÓTESE", style="bold magenta")
+    
+    table = Table(title="Teste de Hipótese - Retorno Esperado", box=box.SIMPLE_HEAVY)
+    table.add_column("Criptomoeda", style="cyan", no_wrap=True)
+    table.add_column("Retorno Médio (%)", style="white")
+    table.add_column("P-valor", style="white")
+    table.add_column("Rejeita H0?", style="white")
+    table.add_column("Conclusão", style="white")
+    
+    for resultado in resultados_teste:
+        crypto = resultado['crypto']
+        retorno_medio = resultado['retorno_medio']
+        p_valor = resultado['p_valor']
+        rejeita_h0 = resultado['rejeita_h0']
+        percentual_esperado = resultado['percentual_esperado']
+        
+        # Formatação da conclusão
+        if rejeita_h0:
+            conclusao = f"Retorno > {percentual_esperado}%"
+            conclusao_style = "✓"
+        else:
+            conclusao = f"Retorno ≤ {percentual_esperado}%"
+            conclusao_style = "✗"
+        
+        table.add_row(
+            crypto,
+            f"{retorno_medio:.4f}",
+            f"{p_valor:.6f}",
+            conclusao_style,
+            conclusao
+        )
+    
+    console.print(table)
+    
+    # Estatísticas gerais
+    total_cryptos = len(resultados_teste)
+    rejeitaram_h0 = sum(1 for r in resultados_teste if r['rejeita_h0'])
+    
+    print(f"\nResumo: {rejeitaram_h0}/{total_cryptos} criptomoedas rejeitaram H0 (α = 5%)")
 
 
 def print_profit_results(crypto: str, profit_model: float, profit_buyhold: float) -> None:
@@ -215,6 +266,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--kfolds", type=int, default=5, help="Número de folds para cross-validation"
     )
+    parser.add_argument(
+        "--teste-retorno", 
+        type=float, 
+        default=None, 
+        help="Percentual de retorno esperado para teste de hipótese (ex: 5.0 para 5 porcento)"
+    )
     return parser.parse_args()
 
 
@@ -243,6 +300,7 @@ def main() -> None:
     stats_dict = {}
     all_profits_model = []
     all_profits_buyhold = []
+    resultados_teste_hipotese = []  # Para guardar resultados do teste de hipótese
     
     for crypto, filepath in cryptos.items():
         try:
@@ -276,6 +334,18 @@ def main() -> None:
             if len(X) < 20:  # Precisa de dados suficientes
                 print_message(f"❌ {crypto}: Poucos dados para treinamento", style="red")
                 continue
+            
+            # === TESTE DE HIPÓTESE (se solicitado pelo usuário) ===
+            if args.teste_retorno is not None:
+                print_message(f"🧪 Fazendo teste de hipótese para retorno ≥ {args.teste_retorno}%", style="yellow")
+                resultado_teste = teste_hipotese_retorno(
+                    df_with_features['retorno_diario'], 
+                    percentual_esperado=args.teste_retorno,
+                    nivel_significancia=0.05
+                )
+                # Adiciona nome da crypto ao resultado
+                resultado_teste['crypto'] = crypto
+                resultados_teste_hipotese.append(resultado_teste)
             
             # === ANÁLISE COMPLETA DE LUCRO (Requisito 9) ===
             # Faz análise completa comparando MLP vs Linear vs melhor Polinomial
@@ -336,6 +406,10 @@ def main() -> None:
 
     # === ESTATÍSTICAS FINAIS ===
     print_message("\n📈 RESUMO GERAL", style="bold magenta")
+    
+    # Resumo dos testes de hipótese (se foram executados)
+    if resultados_teste_hipotese:
+        print_resumo_teste_hipotese(resultados_teste_hipotese)
     
     # c) Comparação de dispersão entre criptomoedas
     if len(dfs) > 1:

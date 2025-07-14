@@ -1,236 +1,287 @@
 # Crypto Predictor
 
-Project for cryptocurrency price prediction using regression models (MLP, linear, polynomial, etc.).
+Um projeto acadêmico para previsão de preços de criptomoedas usando modelos de aprendizado de máquina.
 
-## Setup and Installation
+## 📋 Sobre o Projeto
 
-1. Clone this repository:
-    ``` bash
-    git clone https://github.com/alexpereiramaranhao/crypto-predictor
-    ```
-2. Install dependencies:
-    ``` bash
-    pip install -r requirements.txt
-    ```
+Este projeto foi desenvolvido para um curso de especialização em Inteligência Artificial. O objetivo é usar modelos básicos de machine learning para prever preços de fechamento de criptomoedas e calcular a lucratividade de diferentes estratégias de investimento.
 
-## Estrutura
+### O que o projeto faz:
 
-```text
+- Carrega dados históricos de **10 criptomoedas** diferentes
+- Cria indicadores técnicos básicos (média móvel, volatilidade, retornos)
+- Treina modelos de previsão (MLP, Linear, Polinomial)
+- Calcula lucros simulados usando as previsões
+- Gera **análises estatísticas** com boxplots, histogramas e testes
+- Compara variabilidade entre criptomoedas
+- Realiza testes de hipóteses e ANOVA
+
+## 🚀 Instalação Rápida
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/alexpereiramaranhao/crypto-predictor
+cd crypto-predictor
+```
+
+### 2. Instale as dependências
+
+```bash
+pip install -r requirements.txt
+```
+
+ou use Poetry via
+
+```bash
+poetry install
+```
+
+### 3. Teste se está funcionando
+
+```bash
+python exemplo_uso.py
+```
+
+## 📁 Estrutura do Projeto
+
+```
 crypto-predictor/
-│
-├── data/                # Para datasets locais ou temporários
-│
-├── figures/             # Salvar todos os gráficos gerados
-│
-├── src/                 # Código-fonte principal do projeto
-│   ├── __init__.py
-│   ├── data_load.py     # Funções de carregamento dos dados
-│   ├── features.py      # Engenharia de features
-│   ├── models.py        # Definição/treinamento de modelos
-│   ├── analysis.py      # Análises estatísticas (medidas resumo, ANOVA, etc)
-│   ├── plots.py         # Funções para gerar e salvar gráficos
-│   ├── utils.py         # Funções auxiliares (ex: cálculo de lucro, logging customizado)
-│   └── config.py        # Configurações centralizadas, ex: lista de moedas, paths
-│
-├── tests/               # Testes unitários com pytest
-│   ├── __init__.py
-│   ├── test_data_load.py
-│   ├── test_analysis.py
-│
-├── requirements.txt     # Todas as dependências do projeto
-├── README.md            # Documentação e instruções de uso
-├── main.py              # Script principal para execução via CLI
-└── .gitignore           # Para ignorar arquivos/diretórios no controle de versão (git)
-```
-## How to Use
-
-### Basic Usage
-
-Run the main script with the desired cryptocurrency and model in project's root directory:
-
-``` bash
-python main.py --crypto BTC --model linear --kfolds 5
+├── data/                    # Dados das 10 criptomoedas
+│   ├── Poloniex_ADAUSDT_d.csv      # Dados da Cardano
+│   ├── Poloniex_BTCUSDT_d.csv      # Dados do Bitcoin
+│   └── ...                         # Outras 8 criptomoedas
+├── figures/                 # Gráficos gerados
+├── src/                     # Código principal
+│   ├── data_load.py         # Carregamento de dados
+│   ├── features.py          # Criação de indicadores
+│   ├── models.py            # Modelos de ML
+│   ├── lucro.py             # Cálculos de lucro
+│   ├── statistics/          # Análises estatísticas
+│   └── util/                # Funções auxiliares
+├── tests/                   # Testes automatizados
+├── exemplo_uso.py           # Exemplo completo
+├── requirements.txt         # Dependências
+└── README.md               # Este arquivo
 ```
 
-Run the main script with all cryptocurrency:
+## 🔧 Como Usar
 
-``` bash
+### Execução Básica
+
+Para executar o projeto com um modelo específico e processar as 10 criptomoedas:
+
+```bash
 python -m src.main --model linear
 ```
 
-### Available Parameters
+### Parâmetros Disponíveis
 
-- `--crypto`: Cryptocurrency symbol (default: BTC)
-   - Available options: BTC, ETH, ADA, etc.
-- `--model`: Model to use (default: mlp)
-   - Available options: mlp, linear, polynomial, random_forest, xgboost
-- `--kfolds`: Number of k-fold cross-validation splits (default: 5)
-- `--timeframe`: Data timeframe in days (default: 365)
-- `--features`: Comma-separated list of features to use (default: "close,volume,rsi,macd")
+- `--model`: Escolha o modelo de previsão
 
-### Examples
+  - `linear`: Regressão linear simples
+  - `mlp`: Rede neural multicamadas
+  - `poly`: Regressão polinomial
 
-Train a polynomial regression model on Ethereum with 10-fold cross-validation:
+- `--kfolds`: Número de divisões para validação cruzada (padrão: 5)
 
-``` bash
-python -m src.main --crypto ETH --model polynomial --kfolds 10
+### Exemplos de Uso
+
+```bash
+# Usar modelo linear com validação cruzada de 5 folds
+python -m src.main --model linear --kfolds 5
+
+# Usar rede neural MLP com 10 folds
+python -m src.main --model mlp --kfolds 10
+
+# Usar regressão polinomial
+python -m src.main --model poly
 ```
 
-Use specific features with a random forest model:
+### Demonstração Completa
 
-``` bash
-python -m src.main --crypto BTC --model random_forest --features "close,volume,rsi,ma20,ma50"
+Para ver todas as funcionalidades em ação:
+
+```bash
+python exemplo_uso.py
 ```
 
-## Running Tests
+Este comando irá:
 
-### Basic Tests
+1. Carregar dados de exemplo do Bitcoin
+2. Criar indicadores técnicos básicos
+3. Treinar modelos de previsão
+4. Calcular lucros simulados
+5. Gerar gráficos na pasta `figures/`
 
-Run the test suite with pytest:
+## 📊 O que você vai ver
 
-``` bash
+### Indicadores Criados
+
+- **Média Móvel 7 dias**: Suaviza variações de preço
+- **Volatilidade**: Medida de risco (desvio padrão)
+- **Retorno Diário**: Variação percentual dia a dia
+- **Indicador de Alta**: Se o preço subiu (1) ou desceu (0)
+
+### Modelos Treinados
+
+- **Linear**: Simples e rápido
+- **MLP**: Rede neural básica
+- **Polinomial**: Captura relações não-lineares
+
+### Análises Geradas
+
+#### 📊 Para cada criptomoeda:
+
+- **Estatísticas descritivas**: média, mediana, moda, desvio padrão, variância
+- **Boxplots**: distribuição dos preços de fechamento
+- **Histogramas**: frequência dos preços com curva de densidade
+- **Gráficos de linha**: preços + média móvel, mediana móvel e moda
+
+#### 📈 Análises comparativas:
+
+- **Variabilidade entre criptomoedas**: comparação de dispersão
+- **Teste de hipóteses**: retornos médios superiores a X%
+- **ANOVA**: diferenças significativas entre criptomoedas
+- **Validação cruzada**: performance dos modelos
+- **Comparação de lucros**: estratégias de investimento
+
+## 🧪 Executando Testes
+
+### Testes Básicos
+
+```bash
 pytest
 ```
 
-### Tests with Coverage
+### Testes com Relatório de Cobertura
 
-Run tests with coverage report:
-
-``` bash
+```bash
 pytest --cov=src --cov-report=html
 ```
-Then open `htmlcov/index.html` in your browser to view the report.
 
+Depois abra `htmlcov/index.html` no navegador para ver o relatório.
 
-## Code Quality and Formatting
+### Testes de Arquivo Específico
 
-This project uses several tools to maintain code quality and consistency:
+```bash
+pytest tests/test_features.py
+```
 
-### Code Formatting with Black
+## 🔍 Qualidade de Código
 
-**Black** is used for automatic code formatting. It ensures consistent style across the entire codebase.
-
-Format all Python files:
+### Formatação Automática
 
 ```bash
 black src/ tests/
 ```
 
-Check formatting without making changes:
-
-``` bash
-black --check src/ tests/
-```
-
-Format a specific file:
+### Verificação de Estilo
 
 ```bash
-black src/models.py
-```
-
-### Code Linting with Flake8
-
-**Ruff** checks for code style issues, syntax errors, and potential bugs.
-
-Run linting on all files:
-
-Aplicar correções automaticamente
-
-```bash
-
 ruff check --fix src/ tests/
 ```
 
-### Security Scanning
+### Verificação de Segurança
 
-**Safety** checks for known security vulnerabilities in dependencies:
-
-``` bash
+```bash
+bandit -r src/
 safety scan
 ```
 
-**Bandit** scans Python code for common security issues:
+## 📈 Exemplos de Saída
 
-``` bash
-bandit -r src/
+### Processamento Multi-Criptomoedas
+
+```
+Executando pipeline para múltiplas moedas usando modelo linear com 5 folds.
+Processando ADA: 1000 dias de dados
+Processando AKITA: 850 dias de dados
+Processando BTC: 1200 dias de dados
+...
 ```
 
-Generate a detailed security report:
+### Análises Estatísticas Geradas
 
-```bash
-bandit -r src/ -f json -o security-report.json
+```
+┌─────────────────────────────────────────────────────┐
+│            Medidas resumo e de dispersão - BTC      │
+├─────────────────────────────────────────────────────┤
+│ Estatística                      │ Valor             │
+│ mean                            │ 45123.456789      │
+│ median                          │ 43500.000000      │
+│ std                             │ 12345.678901      │
+└─────────────────────────────────────────────────────┘
 ```
 
-### Pre-commit Quality Checks
+### Gráficos Gerados
 
-Before committing code, run these commands to ensure quality:
+Os gráficos são salvos em `figures/` com:
 
-``` bash
+- **Boxplots individuais**: `boxplot_BTC.png`, `boxplot_ADA.png`, etc.
+- **Histogramas**: `histogram_BTC.png`, `histogram_ADA.png`, etc.
+- **Gráficos de linha**: `price_summary_BTC.png`, etc.
+- **Comparações**: evolução do lucro e dispersão entre modelos
 
-# Format code
-black src/ tests/
+## ⚠️ Limitações Atuais
 
-# Check linting
-ruff check --fix src/ tests/
+### Dados
 
-# Run tests
-pytest
+- ✅ 10 criptomoedas já incluídas no repositório
+- Dados obtidos de [CryptoDataDownload](https://www.cryptodatadownload.com)
+- Formato padronizado USDT para facilitar comparações
 
-# Check security
-# safety scan
-bandit -r src/
-```
+### Modelos
 
-### Configuration Files
+- Apenas 3 modelos básicos implementados
+- Não há otimização automática de hiperparâmetros
 
-You can customize the behavior of these tools by creating configuration files:
+### Features
 
-### Ruff configuration
+- 4 indicadores técnicos básicos
+- Não há RSI, MACD ou outros indicadores avançados
 
-``` toml
+## 🎯 Requisitos Acadêmicos Atendidos
 
-[tool.ruff]
-line-length = 88
-lint.extend-select = ["I"]  # Ordena imports também
-```
+Este projeto atende aos requisitos do trabalho acadêmico:
 
-### `pyproject.toml` (Black configuration)
+- ✅ Modelos de ML para previsão de preços
+- ✅ Validação cruzada K-fold
+- ✅ Análise estatística para 10 criptomoedas
+- ✅ Medidas resumo e dispersão completas
+- ✅ Boxplots e histogramas individuais
+- ✅ Análise de variabilidade entre criptomoedas
+- ✅ Gráficos de linha com média, mediana e moda
+- ✅ Teste de hipóteses e ANOVA
+- ✅ Cálculo de lucro com estratégia de investimento
+- ✅ Comparação entre modelos
+- ✅ Visualizações com matplotlib/seaborn
+- ✅ Estrutura modular com docstrings
+- ✅ Testes automatizados com pytest
+- ✅ Ferramentas de qualidade de código
 
-``` toml
-[tool.black]
-line-length = 88
-target-version = ['py310']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | data
-)/
-```
+## 🤝 Contribuindo
 
-## Continuous Integration
+Este é um projeto acadêmico, mas se você quiser contribuir:
 
-This project uses GitHub Actions for automated testing and quality checks. The pipeline runs:
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature
+3. Rode os testes e formatação
+4. Faça um pull request
 
-- **Unit tests** on Python 3.10, 3.11, and 3.12
-- **Code formatting** checks with Black
-- **Linting** with Flake8
-- **Security scanning** with Safety and Bandit
-- **Coverage reporting**
+## 📧 Contato
 
-The CI pipeline is triggered on:
+Para dúvidas sobre o projeto acadêmico:
 
-- Push to any branch (except `main` and `develop`)
-- Pull requests to `develop` branch
+- noronha@ifg.edu.br
+- otavio.xavier@ifg.edu.br
+- eder.brito@ifg.edu.br
 
-## Output
-Results will be saved to the `figures/` directory, including:
-* Charts
+Para dúvidas sobre a implementação:
+
+- eduardocbraga@hotmail.com
+- alexpereiramaranhao@outlook.com
+
+---
+
+**Nota**: Este é um projeto educacional para fins acadêmicos. Não deve ser usado para decisões reais de investimento.

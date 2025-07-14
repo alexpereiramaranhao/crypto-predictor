@@ -68,16 +68,16 @@ def main():
 
     # 1. Defina os arquivos das 10 criptomoedas (ajuste paths conforme sua organização)
     cryptos = {
-        "AAVE": "data/Poloniex_AAVEBTC_d.csv",
-        "BTC": "data/Poloniex_BTCUSDD_d.csv",
-        "ETH": "data/Poloniex_ETHUSDD_d.csv",
-        "LTC": "data/Poloniex_LTCUSDD_d.csv",
-        "XRP": "data/Poloniex_XRPUSDD_d.csv",
-        "BCH": "data/Poloniex_BCHBTC_d.csv",
-        "XMR": "data/Poloniex_XMRBTC_d.csv",
-        "DASH": "data/Poloniex_DASHBTC_d.csv",
-        "ETC": "data/Poloniex_ETCBTC_d.csv",
-        "BAT": "data/Poloniex_BATBTC_d.csv",
+        "ADA": "data/Poloniex_ADAUSDT_d.csv",
+        "AKITA": "data/Poloniex_AKITAUSDT_d.csv",
+        "ALICE": "data/Poloniex_ALICEUSDT_d.csv",
+        "ALPACA": "data/Poloniex_ALPACAUSDT_d.csv",
+        "ALPINE": "data/Poloniex_ALPINEUSDT_d.csv",
+        "BICO": "data/Poloniex_BICOUSDT_d.csv",
+        "BTC": "data/Poloniex_BTCUSDT_d.csv",
+        "CHR": "data/Poloniex_CHRUSDT_d.csv",
+        "COOL": "data/Poloniex_COOLUSDT_d.csv",
+        "CORN": "data/Poloniex_CORNUSDT_d.csv",
     }
 
     dfs = {}

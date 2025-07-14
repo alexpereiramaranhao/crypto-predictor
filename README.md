@@ -4,7 +4,7 @@ Um projeto acadêmico para previsão de preços de criptomoedas usando modelos d
 
 ## 📋 Sobre o Projeto
 
-Este projeto foi desenvolvido para um curso de especialização em Inteligência Artificial. O objetivo é usar modelos básicos de machine learning para prever preços de fechamento de criptomoedas e calcular a lucratividade de diferentes estratégias de investimento.
+Este projeto foi desenvolvido para o curso de especialização em Inteligência Artificial do IFG câmpus Goiânia. O objetivo é desenvolver um modelo para prever preços de fechamento de criptomoedas e calcular a lucratividade de diferentes estratégias de investimento.
 
 ### O que o projeto faz:
 
@@ -77,19 +77,23 @@ python -m src.main --model linear
 ### Parâmetros Disponíveis
 
 #### ⚠️ Parâmetro Obrigatório
+
 - `--model` **(OBRIGATÓRIO)**: Escolha do modelo de previsão
   - `linear`: Regressão linear simples e rápida
   - `mlp`: Rede neural multicamadas (mais complexa)
   - `poly`: Regressão polinomial (captura não-linearidades)
 
 #### 📋 Parâmetros Opcionais
+
 - `--kfolds`: Número de divisões para validação cruzada (padrão: 5, mínimo: 2)
 - `--teste-retorno`: Percentual de retorno esperado para teste de hipótese (ex: 5.0 para 5%)
   - Se não especificado, o teste de hipótese não será executado
   - Valor sugerido: entre 1.0 e 10.0 (1% a 10% de retorno)
 
 #### 🆘 Ajuda
+
 Para ver todos os parâmetros disponíveis:
+
 ```bash
 python -m src.main --help
 ```
@@ -268,11 +272,13 @@ Processando BTC: 1200 dias de dados
 Após a execução, você encontrará em `figures/`:
 
 #### 📊 **Por criptomoeda** (30 arquivos - 3 × 10 criptos):
+
 - **Boxplots**: `boxplot_BTC.png`, `boxplot_ADA.png`, etc.
-- **Histogramas**: `histogram_BTC.png`, `histogram_ADA.png`, etc.  
+- **Histogramas**: `histogram_BTC.png`, `histogram_ADA.png`, etc.
 - **Gráficos de linha**: `price_summary_BTC.png`, etc.
 
 #### 🔄 **Comparações de modelos** (2 arquivos):
+
 - **Evolução do lucro**: `evolucao_lucro_modelos.png` (subplots 1x3)
 - **Dispersão de previsões**: `dispersao_modelos.png` (subplots 1x3)
 
@@ -283,30 +289,34 @@ Após a execução, você encontrará em `figures/`:
 ### ❌ Erros Comuns
 
 #### 1. **"argument --model is required"**
+
 ```bash
 # ❌ Erro
 python -m src.main
 
-# ✅ Correto  
+# ✅ Correto
 python -m src.main --model linear
 ```
 
-#### 2. **"No such file or directory: data/Poloniex_..."**
+#### 2. **"No such file or directory: data/Poloniex\_..."**
+
 - Verifique se está na pasta raiz do projeto
 - Confirme se a pasta `data/` existe com os arquivos CSV
 
 #### 3. **"ModuleNotFoundError: No module named 'src'"**
+
 ```bash
 # ❌ Erro - executando de pasta errada
 cd src
 python main.py
 
 # ✅ Correto - executar da pasta raiz
-cd crypto-predictor  
+cd crypto-predictor
 python -m src.main --model linear
 ```
 
 #### 4. **Execução muito lenta**
+
 - Normal: processa 10 criptomoedas com 3 modelos cada
 - Use menos folds: `--kfolds 3` (em vez de 5)
 - Teste com modelo mais rápido: `--model linear`
@@ -333,6 +343,7 @@ python -m src.main --model linear
 ### Features
 
 - 4 indicadores técnicos básicos
+- não há uso de features de dados externos
 - Não há RSI, MACD ou outros indicadores avançados
 
 ## 🎯 Requisitos Acadêmicos Atendidos

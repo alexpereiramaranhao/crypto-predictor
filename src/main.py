@@ -23,7 +23,7 @@ from src.features import criar_features_basicas_completas
 from src.models import train_mlp, train_linear, encontrar_melhor_grau_polinomial, validacao_cruzada_kfold
 from src.lucro import calcular_lucro_investimento, calcular_estrategia_buy_and_hold
 from src.analise_lucro import imprimir_metricas_modelo, comparar_todos_modelos, mostrar_equacao_linear
-from src.statistics.analysis import compare_dispersion, summary_statistics, teste_hipotese_retorno
+from src.statistics.analysis import compare_dispersion, summary_statistics, teste_hipotese_retorno, anova_entre_criptos, anova_grupos_caracteristicas
 from src.statistics.plots import plot_boxplot, plot_histogram, plot_price_with_summary, plotar_evolucao_lucro, plotar_dispersao_modelos
 from src.util.config import LOG_LEVEL
 from src.util.utils import setup_logging
@@ -415,6 +415,33 @@ def main() -> None:
     if len(dfs) > 1:
         dispersion_df = compare_dispersion(dfs)
         print_dispersion_table(dispersion_df)
+    
+    # === ANÁLISES DE VARIÂNCIA (ANOVA) ===
+    print_message("\n📊 ANÁLISES DE VARIÂNCIA (ANOVA)", style="bold blue")
+    
+    # Preparar dados com features para ANOVA (necessário para ter retorno_diario e volatilidade_7d)
+    dfs_com_features = {}
+    for crypto, df in dfs.items():
+        try:
+            df_features = criar_features_basicas_completas(df)
+            if 'retorno_diario' in df_features.columns and 'volatilidade_7d' in df_features.columns:
+                dfs_com_features[crypto] = df_features
+        except Exception as e:
+            print_message(f"Erro ao criar features para {crypto}: {e}", style="red")
+    
+    if len(dfs_com_features) >= 2:
+        # A) ANOVA entre criptomoedas (Requisito 11a)
+        print_message("\n🔍 A) ANOVA entre criptomoedas", style="cyan")
+        resultado_anova_criptos = anova_entre_criptos(dfs_com_features)
+        
+        if len(dfs_com_features) >= 3:
+            # B) ANOVA entre grupos de volatilidade (Requisito 11b)
+            print_message("\n🔍 B) ANOVA entre grupos de volatilidade", style="cyan")
+            resultado_anova_grupos = anova_grupos_caracteristicas(dfs_com_features)
+        else:
+            print_message("⚠️ Precisa de pelo menos 3 criptomoedas para ANOVA de grupos", style="yellow")
+    else:
+        print_message("⚠️ Dados insuficientes para análises de ANOVA", style="yellow")
     
     # Estatísticas de lucro
     if all_profits_model:

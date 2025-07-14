@@ -16,6 +16,7 @@ matplotlib = ">=3.10"
 seaborn = "0.13.2"
 rich = "14.0.0"
 python-dotenv = "1.0.1"
+statsmodels = "0.14.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.2.2"

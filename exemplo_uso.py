@@ -17,7 +17,7 @@ def exemplo_completo():
     # 1. CARREGAMENTO DOS DADOS
     print("\n1. Carregando dados de exemplo...")
     try:
-        df_btc = load_crypto_data("data/exemplo_btc.csv", parse_dates=["date"])
+        df_btc = load_crypto_data("data/Poloniex_BTCUSDT_d.csv", parse_dates=["date"])
         print(f"Dados carregados: {len(df_btc)} dias de dados do Bitcoin")
         print(f"Preço inicial: R$ {df_btc['close'].iloc[0]:.2f}")
         print(f"Preço final: R$ {df_btc['close'].iloc[-1]:.2f}")

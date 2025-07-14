@@ -40,7 +40,7 @@ poetry install
 ### 3. Teste se está funcionando
 
 ```bash
-python exemplo_uso.py
+python -m src.main --model linear
 ```
 
 ## 📁 Estrutura do Projeto
@@ -60,7 +60,6 @@ crypto-predictor/
 │   ├── statistics/          # Análises estatísticas
 │   └── util/                # Funções auxiliares
 ├── tests/                   # Testes automatizados
-├── exemplo_uso.py           # Exemplo completo
 ├── requirements.txt         # Dependências
 └── README.md               # Este arquivo
 ```
@@ -84,6 +83,7 @@ python -m src.main --model linear
   - `poly`: Regressão polinomial
 
 - `--kfolds`: Número de divisões para validação cruzada (padrão: 5)
+- `--teste-retorno`: Percentual de retorno esperado para teste de hipótese (ex: 5.0 para 5%)
 
 ### Exemplos de Uso
 
@@ -96,23 +96,27 @@ python -m src.main --model mlp --kfolds 10
 
 # Usar regressão polinomial
 python -m src.main --model poly
+
+# Executar com teste de hipótese para retorno de 3%
+python -m src.main --model linear --teste-retorno 3.0
 ```
 
 ### Demonstração Completa
 
-Para ver todas as funcionalidades em ação:
+Para ver todas as funcionalidades em ação com todas as 10 criptomoedas:
 
 ```bash
-python exemplo_uso.py
+python -m src.main --model mlp --kfolds 5
 ```
 
 Este comando irá:
 
-1. Carregar dados de exemplo do Bitcoin
-2. Criar indicadores técnicos básicos
-3. Treinar modelos de previsão
-4. Calcular lucros simulados
-5. Gerar gráficos na pasta `figures/`
+1. Carregar dados das 10 criptomoedas
+2. Criar indicadores técnicos básicos para todas
+3. Treinar modelos de previsão (MLP, Linear, Polinomial)
+4. Calcular lucros simulados para cada criptomoeda
+5. Realizar análises estatísticas completas (ANOVA, testes de hipótese)
+6. Gerar gráficos na pasta `figures/`
 
 ## 📊 O que você vai ver
 
@@ -141,8 +145,9 @@ Este comando irá:
 #### 📈 Análises comparativas:
 
 - **Variabilidade entre criptomoedas**: comparação de dispersão
-- **Teste de hipóteses**: retornos médios superiores a X%
-- **ANOVA**: diferenças significativas entre criptomoedas
+- **Teste de hipóteses**: retornos médios superiores a valor esperado
+- **ANOVA entre criptomoedas**: diferenças significativas nos retornos
+- **ANOVA por grupos**: agrupamento por volatilidade com testes post-hoc
 - **Validação cruzada**: performance dos modelos
 - **Comparação de lucros**: estratégias de investimento
 
